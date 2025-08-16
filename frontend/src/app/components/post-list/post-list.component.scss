@@ -1,0 +1,12 @@
+.container {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 2rem;
+}
+
+.add-post {
+    position: absolute;
+    right: 1%;
+    top: 18%;
+}

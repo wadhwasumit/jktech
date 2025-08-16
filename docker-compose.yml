@@ -1,0 +1,225 @@
+version: "3.8"
+
+services:
+  postapp-dev-container:
+    container_name: postapp-dev-container
+    build:
+      context: .
+      dockerfile: ./backend/.devcontainer/Dockerfile
+    volumes:
+      - ./backend/:/workspace:cached
+    command: sleep infinity
+    networks:
+      - dev-network
+
+  # mongo1:
+  #   image: mongo:6
+  #   container_name: mongo1
+  #   restart: always
+  #   command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongo1_data:/data/db
+  #   networks:
+  #     - dev-network
+
+  # mongo2:
+  #   image: mongo:6
+  #   container_name: mongo2
+  #   restart: always
+  #   command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
+  #   networks:
+  #     - dev-network
+
+  # mongo3:
+  #   image: mongo:6
+  #   container_name: mongo3
+  #   restart: always
+  #   command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
+  #   networks:
+  #     - dev-network
+
+  # mongo-setup:
+  #   image: mongo:6
+  #   container_name: mongo-setup
+  #   depends_on:
+  #     - mongo1
+  #     - mongo2
+  #     - mongo3
+  #   volumes:
+  #     - ./backend/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+  #   entrypoint: [ "bash", "/docker-entrypoint-initdb.d/mongo-init.sh" ]    
+  #   networks:
+  #     - dev-network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: [ "redis-server", "--appendonly", "yes" ]
+    networks:
+      - dev-network
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./backend/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - dev-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3005:3000"
+    networks:
+      - dev-network
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./backend/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+    networks:
+      - dev-network
+    env_file:
+      - ./backend/api-gateway/.env
+    depends_on:
+      document-service:
+        condition: service_healthy
+
+  # post-service:
+  #   build:
+  #     context: ./backend/post-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3002"
+  #     - "4000"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - CONSUL_HOST=consul
+  #     - CONSUL_PORT=8500
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://post-service:3002/health"]
+  #     interval: 10s
+  #     retries: 5
+  #     start_period: 5s
+  #   networks:
+  #     - dev-network
+  #   depends_on:
+  #     - redis
+  #     - mongo1
+  #     - mongo2
+  #     - mongo3
+  #     - consul
+  #   deploy:
+  #     replicas: 3 # Run 3 instances of Post Service
+  #   restart: always
+  document-service:
+    build:
+      context: ./backend/document-service
+      dockerfile: Dockerfile
+    ports:
+      - "3006:3006"
+      - "4001:4001"
+    environment:
+      - NODE_ENV=development
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://document-service:3006/health"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - uploads_data:/app/uploads
+    networks:
+      - dev-network
+    depends_on:
+      - postgres
+      - consul
+    deploy:
+      replicas: 1 # Run 3 instances of Post Service
+    restart: always
+  consul:
+    image: consul:1.14.0  # Specify a specific version
+    container_name: consul
+    ports:
+      - "8500:8500"  # Expose port 8500 for the UI
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+    command: "consul agent -dev -client=0.0.0.0 -bind=0.0.0.0"
+    networks:
+      - dev-network
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - dev-network
+  auth-service:
+    build: 
+      context: ./backend/auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    ports:
+      - "3003:3003"
+      - "3004:3004"
+    env_file:
+      - ./backend/auth-service/.env
+    depends_on:
+      # - mongo1
+      - consul
+      - postgres
+    networks:
+      - dev-network
+  postgres:
+    image: postgres:16
+    container_name: auth_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auth_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dev-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - dev-network
+
+volumes:
+  # mongo1_data:
+  postgres_data:
+  uploads_data:
+
+networks:
+  dev-network:
+    driver: bridge

@@ -1,0 +1,88 @@
+    <div class="list-container">
+      <div class="header">
+        <h2>Users</h2>
+        <!-- <button mat-raised-button 
+                color="primary" 
+                routerLink="/users/new">
+          <mat-icon>add</mat-icon>
+          Add User
+        </button> -->
+      </div>
+      
+      <mat-card class="table-card">
+        <mat-card-content>
+          <div *ngIf="isLoading" class="loading">
+            <mat-spinner></mat-spinner>
+          </div>
+          
+          <table mat-table [dataSource]="users" *ngIf="!isLoading" class="full-width">
+            <!-- Title Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let user">{{ user.name }}</td>
+            </ng-container>
+            
+            <!-- Original Name Column -->
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef>Email</th>
+              <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+            </ng-container>
+            
+            <!-- Size Column -->
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef>Role</th>
+              <td mat-cell *matCellDef="let user">{{ user.role }}</td>
+            </ng-container>
+            
+            <!-- Upload Date Column -->
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>Uploaded</th>
+              <td mat-cell *matCellDef="let user">{{ user.createdAt }}</td>
+            </ng-container>
+            
+            <!-- Ingested Status Column -->
+            <ng-container matColumnDef="isActive">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let user">
+                <mat-chip-listbox>
+                  <mat-chip [color]="user.isActive ? 'accent' : 'warn'">
+                    {{ user.isActive ? 'Active' : 'Not Active' }}
+                  </mat-chip>
+                </mat-chip-listbox>
+              </td>
+            </ng-container>
+            
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let user">
+                <button mat-icon-button 
+                        [matMenuTriggerFor]="actionMenu"
+                        [matMenuTriggerData]="{ user: user }">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+          
+          <mat-menu #actionMenu="matMenu">
+            <ng-template matMenuContent let-user="user">                      
+              <button mat-menu-item (click)="editUserRole(user)">
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item 
+                      (click)="deleteUser(user)"
+                      class="delete-action">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button>
+            </ng-template>
+          </mat-menu>
+        </mat-card-content>
+      </mat-card>
+    </div>

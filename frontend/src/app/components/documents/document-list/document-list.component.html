@@ -1,0 +1,96 @@
+    <div class="list-container">
+      <div class="header">
+        <h2>Documents</h2>
+        <button mat-raised-button 
+                color="primary" 
+                routerLink="/documents/upload">
+          <mat-icon>add</mat-icon>
+          Upload Document
+        </button>
+      </div>
+      
+      <mat-card class="table-card">
+        <mat-card-content>
+          <div *ngIf="isLoading" class="loading">
+            <mat-spinner></mat-spinner>
+          </div>
+          
+          <table mat-table [dataSource]="documents" *ngIf="!isLoading" class="full-width">
+            <!-- Title Column -->
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef>Title</th>
+              <td mat-cell *matCellDef="let document">{{ document.title }}</td>
+            </ng-container>
+            
+            <!-- Original Name Column -->
+            <ng-container matColumnDef="originalName">
+              <th mat-header-cell *matHeaderCellDef>File Name</th>
+              <td mat-cell *matCellDef="let document">{{ document.originalName }}</td>
+            </ng-container>
+            
+            <!-- Size Column -->
+            <ng-container matColumnDef="size">
+              <th mat-header-cell *matHeaderCellDef>Size</th>
+              <td mat-cell *matCellDef="let document">{{ document.size | fileSize }}</td>
+            </ng-container>
+            
+            <!-- Upload Date Column -->
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>Uploaded</th>
+              <td mat-cell *matCellDef="let document">{{ document.createdAt }}</td>
+            </ng-container>
+            
+            <!-- Ingested Status Column -->
+            <ng-container matColumnDef="isIngested">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let document">
+                <mat-chip-listbox>
+                  <mat-chip [color]="document.isIngested ? 'accent' : 'warn'">
+                    {{ document.isIngested ? 'Ingested' : 'Not Ingested' }}
+                  </mat-chip>
+                </mat-chip-listbox>
+              </td>
+            </ng-container>
+            
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let document">
+                <button mat-icon-button 
+                        [matMenuTriggerFor]="actionMenu"
+                        [matMenuTriggerData]="{ document: document }">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+          
+          <mat-menu #actionMenu="matMenu">
+            <ng-template matMenuContent let-document="document">
+              <button mat-menu-item (click)="viewDocument(document)">
+                <mat-icon>visibility</mat-icon>
+                <span>View</span>
+              </button>
+              <button mat-menu-item (click)="downloadDocument(document)">
+                <mat-icon>download</mat-icon>
+                <span>Download</span>
+              </button>
+              <button mat-menu-item (click)="editDocument(document)">
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item 
+                      (click)="deleteDocument(document)"
+                      class="delete-action">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button>
+            </ng-template>
+          </mat-menu>
+        </mat-card-content>
+      </mat-card>
+    </div>

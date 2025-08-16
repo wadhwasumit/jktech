@@ -1,0 +1,18 @@
+<mat-card class="post-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>{{post.title}}</mat-card-title>
+  </mat-card-header>
+  <!-- Image reference is from Angulawr Material official website -->
+  <mat-card-content>
+    <p>
+      {{post.description}}
+    </p>
+  </mat-card-content>
+  <mat-card-actions>
+    @if(authService.isSelfUser(post.createdBy || '')) {
+
+    <button mat-button (click)="editPost(post)">EDIT</button>
+    }
+    <button mat-button (click)="viewPost()">VIEW</button>
+  </mat-card-actions>
+</mat-card>

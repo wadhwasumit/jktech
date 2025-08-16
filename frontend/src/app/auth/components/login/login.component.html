@@ -1,0 +1,36 @@
+<!-- <button (click)="loginWithGoogle()">Login with Google</button> -->
+
+
+
+<div class="login-container">
+    <mat-card class="login-card">
+        <mat-card-content>
+            <!-- Header with Logo -->
+            <div class="header">
+                <img src="https://images.unsplash.com/photo-1496200186974-4293800e2c20?w=800&auto=format&fit=crop&q=80"
+                    alt="Blog Logo" class="logo" />
+                <h1>Welcome Back</h1>
+                <p class="subtitle">Sign in to access your account</p>
+            </div>
+
+            <!-- Social Login Buttons -->
+            <div class="buttons-container">
+                <button mat-flat-button class="social-button google-button" (click)="loginWithGoogle()">
+                    <span>Continue with Google</span>
+                </button>
+
+                <button mat-flat-button class="social-button facebook-button" (click)="onFacebookLogin()">
+                    <span>Continue with Facebook</span>
+                </button>
+            </div>
+
+            <!-- Terms and Privacy -->
+            <p class="terms">
+                By continuing, you agree to our
+                <a href="#">Terms of Service</a>
+                and
+                <a href="#">Privacy Policy</a>
+            </p>
+        </mat-card-content>
+    </mat-card>
+</div>

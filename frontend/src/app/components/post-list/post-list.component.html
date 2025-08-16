@@ -1,0 +1,12 @@
+<div class="container">
+  <button id="add-post" mat-fab aria-label="Example icon button with a add icon" class="add-post" matTooltip="Add Post"
+    (click)="addPost()">
+    <mat-icon>add</mat-icon>
+  </button>
+  @for (post of (posts$ | async); track $index) {
+  <div class="post">
+
+    <app-post [post]="post"></app-post>
+  </div>
+  }
+</div>
