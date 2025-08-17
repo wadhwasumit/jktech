@@ -70,6 +70,12 @@ services:
     build: 
       context: ./frontend
       dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=development
+      - API_URL=http://localhost:3000
+      - API_PREFIX=/api
+      - GOOGLE_CLIENT_ID=your-google-client-id
+      - GOOGLE_CALLBACK_URL=http://localhost:4200/auth/callback
     ports:
       - "4200:80"
     depends_on:

@@ -11,6 +11,8 @@ RUN npm run build --prod
 FROM nginx:1.21-alpine
 COPY --from=builder /app/dist/post-app/browser /usr/share/nginx/html
 COPY ./default.conf /etc/nginx/conf.d/default.conf
-
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

@@ -2,18 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
+import { EnvService } from '../../env.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router,private env: EnvService) { }
 
   googleLogin() {
     const googleAuthUrl = 'https://accounts.google.com/o/oauth2/auth';
     const params = new HttpParams()
-      .set('client_id', environment.GOOGLE_CLIENT_ID)
-      .set('redirect_uri', environment.GOOGLE_CALLBACK_URL)
+      .set('client_id',  this.env.googleClientId)
+      .set('redirect_uri',  this.env.googleCallbackUrl)
       .set('response_type', 'code')
       .set('scope', 'email profile')
     window.location.href = `${googleAuthUrl}?${params.toString()}`;
