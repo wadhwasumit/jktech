@@ -35,7 +35,7 @@ export class AppController {
 
   @Throttle({ "limit": { limit: 5, ttl: 60 } })
   @Get('users') 
-  @Roles('ADMIN') // Only allow ADMIN role
+  @Roles('admin') // Only allow ADMIN role
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard) 
   @ApiBearerAuth()
@@ -44,7 +44,7 @@ export class AppController {
   }
   
   @Get('users/:id')
-  @Roles('ADMIN') // Only allow ADMIN role
+  @Roles('admin') // Only allow ADMIN role
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard) 
   @ApiBearerAuth()
@@ -62,7 +62,7 @@ export class AppController {
    *     description: Updates an existing user by its ID
    */
   @Put('users/role')
-  @Roles('ADMIN') // Only allow ADMIN role
+  @Roles('admin') // Only allow ADMIN role
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard) 
   @ApiBearerAuth()
@@ -73,7 +73,7 @@ export class AppController {
       type: 'object',
       properties: {
         id: {  type: 'string', example: '6cacf990-2aa3-43df-ad85-1ed5c9fac25a'  },
-        role: { type: 'string', example: '"ADMIN","USER"' },
+        role: { type: 'string', example: '"admin","editor","viewer"' },
       },
       required: ['id', 'role'],
     },
@@ -86,7 +86,7 @@ export class AppController {
   }
 
   @Delete('users/:id')
-  @Roles('ADMIN') // Only allow ADMIN role
+  @Roles('admin') // Only allow ADMIN role
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard) 
   @ApiBearerAuth()

@@ -7,6 +7,7 @@ import { User } from '../entities/user.entity';
 import { DocumentsService } from '../document/document.service';
 import { PythonMockService } from '../python-mock/python-mock.service';
 import { IngestionStatus } from '../common/enums/ingestion-status.enum';
+import { UserRole } from 'src/common/enums/user-role.enum';
 
 @Injectable()
 export class IngestionService {
@@ -87,7 +88,7 @@ export class IngestionService {
       throw new NotFoundException('Ingestion job not found');
     }
 
-    if (user.role !== 'admin' && job.createdById !== user.id) {
+    if (user.role !== UserRole.ADMIN && job.createdById !== user.id) {
       throw new ForbiddenException('You do not have permission to access this job');
     }
 
@@ -95,7 +96,7 @@ export class IngestionService {
   }
 
   async getAllJobs(user: User): Promise<IngestionJob[]> {
-    if (user.role === 'admin') {
+    if (user.role === UserRole.ADMIN) {
       return await this.ingestionJobRepository.find({
         // relations: ['createdBy'],
         order: { createdAt: 'DESC' },

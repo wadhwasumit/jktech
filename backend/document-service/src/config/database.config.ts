@@ -10,7 +10,7 @@ export const databaseConfig: TypeOrmModuleOptions = {
   username: process.env.DATABASE_USERNAME || 'postgres',
   password: process.env.DATABASE_PASSWORD || 'postgres',
   database: process.env.DATABASE_NAME || 'auth_db',
-  entities: [Document, IngestionJob],
+  entities: [Document, IngestionJob,User],
   // entities: ['dist/**/*.entity.{js,ts}'],
   synchronize: true, // Set to false in production
   logging: true,

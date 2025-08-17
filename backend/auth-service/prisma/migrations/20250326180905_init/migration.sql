@@ -5,7 +5,7 @@ CREATE TABLE "User" (
     "name" TEXT,
     "googleId" TEXT NOT NULL,
     "image" TEXT,
-    "role" TEXT NOT NULL DEFAULT 'VIEWER',
+    "role" TEXT NOT NULL DEFAULT 'viewer',
     "isActive" boolean NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

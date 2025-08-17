@@ -13,7 +13,7 @@ export const routes: Routes = [
         path: 'auth',
         loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
     },
-    { path: 'users', component: UserListComponent, title: 'Users', canActivate: [RoleGuard] ,data: { roles: ['ADMIN'] }},
+    { path: 'users', component: UserListComponent, title: 'Users', canActivate: [RoleGuard] ,data: { roles: ['admin'] }},
     // { path: 'users/new', component: UserFormComponent, title: 'Create User' },
     // { path: 'users/:id/edit', component: UserFormComponent, title: 'Edit User' },
     {

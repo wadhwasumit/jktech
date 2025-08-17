@@ -3,7 +3,7 @@ import { UserRole } from '../common/enums/user-role.enum';
 import { Document } from './document.entity';
 import { IngestionJob } from './ingestion-job.entity';
 
-@Entity('users')
+@Entity('User')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -14,12 +14,14 @@ export class User {
   @Column()
   name: string;
 
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.VIEWER,
-  })
-  role: UserRole;
+  @Column({ unique: true })
+  googleId: string;
+
+  @Column({ nullable: true })
+  image: string;
+
+  @Column({ default: UserRole.VIEWER  })
+  role: string;
 
   @Column({ default: true })
   isActive: boolean;

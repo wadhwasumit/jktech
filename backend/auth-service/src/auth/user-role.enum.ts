@@ -1,8 +1,9 @@
 // src/common/enums/user-role.enum.ts
 
 export enum UserRole {
-  ADMIN = 'ADMIN',
+  ADMIN = 'admin',
   EDITOR = 'editor',
-  VIEWER = 'VIEWER',
+  VIEWER = 'viewer',
 }
+
 

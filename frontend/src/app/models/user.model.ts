@@ -10,10 +10,11 @@ export interface User {
 }
 
 export enum UserRole {
-  ADMIN = 'ADMIN',
-  EDITOR = 'EDITOR',
-  VIEWER = 'VIEWER'
+  ADMIN = 'admin',
+  EDITOR = 'editor',
+  VIEWER = 'viewer',
 }
+
 
 export interface CreateUserRequest {
   email: string;
