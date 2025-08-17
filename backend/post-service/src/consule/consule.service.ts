@@ -7,6 +7,7 @@ import * as os from 'os';
 export class ConsulService implements OnModuleInit, OnModuleDestroy, OnApplicationShutdown  {
   private readonly consul: any;
   serviceId: string;
+  serviceName: string='post-service';
   hostname: string;
 
   constructor() {
@@ -26,12 +27,12 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, OnApplicati
     this.serviceId = `post-service-${randomUUID()}`; // Unique ID
     this.hostname = os.hostname(); // Unique per container
     await this.consul.agent.service.register({
-      name: 'post-service', // Common name for all replicas
+      name:this.serviceName, // Common name for all replicas
       id: this.serviceId, // Unique ID per instance
       address: this.hostname, // Use dynamic hostname
       port: 4000, // Internal port
       check: {
-        http: `http://${this.hostname}:3002/health`, // Health check per instance
+        http: `http://${this.serviceName}:3002/health`, // Health check per instance
         interval: '10s',
       },
     });
