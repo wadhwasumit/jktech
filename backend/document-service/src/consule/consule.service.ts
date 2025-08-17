@@ -29,7 +29,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, OnApplicati
     await this.consul.agent.service.register({
       name: this.serviceName, // Common name for all replicas
       id: this.serviceId, // Unique ID per instance
-      address: this.hostname, // Use dynamic hostname
+      address: this.serviceName, // Use dynamic hostname
       port: 4001, // Internal port
       check: {
         http: `http://${this.serviceName}:3006/health`, // Health check per instance

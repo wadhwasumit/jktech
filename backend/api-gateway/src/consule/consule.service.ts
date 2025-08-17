@@ -27,7 +27,7 @@ export class ConsulService implements OnModuleInit {
     await this.consul.agent.service.register({
       name: this.serviceName, // Common name for all replicas
       id: this.serviceId, // Unique ID per instance
-      address: this.hostname, // Use dynamic hostname
+      address: this.serviceName, // Use dynamic hostname
       port: 3000, // Internal port
       check: {
         http: `http://${this.serviceName}:3000/api/docs`, // Health check per instance
