@@ -18,6 +18,3 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_googleId_key" ON "User"("googleId");
-
-INSERT INTO "User" ("id", "email", "name", "googleId", "image", "role", "isActive", "createdAt", "updatedAt") VALUES
-('04700a0f-e1a9-4662-88d9-bf093140d129','wadhwasumit@gmail.com', 'Sumit Wadhwa', '113138766342253835351', 'https://example.com/image.jpg', 'ADMIN', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
