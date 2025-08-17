@@ -22,7 +22,7 @@ export class AuthService {
 
   exchangeCodeForToken(code: string) {
     this.http
-      .post(`${environment.apiUrl}/auth/google`, { code })
+      .post(`${this.env.apiUrl}/auth/google`, { code })
       .subscribe((res: any) => {
         sessionStorage.setItem('jwt', res.access_token);
         sessionStorage.setItem('userId', res.id)

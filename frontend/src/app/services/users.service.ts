@@ -3,12 +3,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User, UserRole } from '../models/user.model';
+import { EnvService } from '../env.service';
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {
   private http = inject(HttpClient);
-  private base = '/api/users'; // change to your gateway origin if needed
-
+  private env = inject(EnvService);
+  // private base = '/api/users'; // change to your gateway origin if needed
+  private base = `${this.env.apiUrl}/users`;
   list(): Observable<User[]> {
     return this.http.get<User[]>(this.base);
   }
