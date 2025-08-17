@@ -25,7 +25,7 @@ export class UsersService {
     return this.http.patch<User>(`${this.base}/${id}`, payload);
   }
 
-  updateRole(id: string, role: UserRole) {
+  updateUserRole(id: string, role: UserRole) {
     return this.http.put<User>(`${this.base}/role`, {id:id,role: role });
   }
 

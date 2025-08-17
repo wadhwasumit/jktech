@@ -4,6 +4,10 @@ FROM node:20-alpine
 # Step 2: Set the working directory
 WORKDIR /app
 
+# Step 3: Install global dependencies and curl
+RUN apk add --no-cache curl \
+    && npm install -g @nestjs/cli
+
 # Step 3: Install global dependencies (if any)
 RUN npm install -g @nestjs/cli
 

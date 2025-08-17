@@ -11,74 +11,6 @@ services:
     command: sleep infinity
     networks:
       - dev-network
-
-  # mongo1:
-  #   image: mongo:6
-  #   container_name: mongo1
-  #   restart: always
-  #   command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
-  #   ports:
-  #     - "27017:27017"
-  #   volumes:
-  #     - mongo1_data:/data/db
-  #   networks:
-  #     - dev-network
-
-  # mongo2:
-  #   image: mongo:6
-  #   container_name: mongo2
-  #   restart: always
-  #   command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
-  #   networks:
-  #     - dev-network
-
-  # mongo3:
-  #   image: mongo:6
-  #   container_name: mongo3
-  #   restart: always
-  #   command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
-  #   networks:
-  #     - dev-network
-
-  # mongo-setup:
-  #   image: mongo:6
-  #   container_name: mongo-setup
-  #   depends_on:
-  #     - mongo1
-  #     - mongo2
-  #     - mongo3
-  #   volumes:
-  #     - ./backend/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
-  #   entrypoint: [ "bash", "/docker-entrypoint-initdb.d/mongo-init.sh" ]    
-  #   networks:
-  #     - dev-network
-
-  redis:
-    image: redis:latest
-    container_name: redis
-    restart: always
-    ports:
-      - "6379:6379"
-    command: [ "redis-server", "--appendonly", "yes" ]
-    networks:
-      - dev-network
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    volumes:
-      - ./backend/prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    networks:
-      - dev-network
-
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    ports:
-      - "3005:3000"
-    networks:
-      - dev-network
   api-gateway:
     container_name: api-gateway
     build:
@@ -98,33 +30,6 @@ services:
       document-service:
         condition: service_healthy
 
-  # post-service:
-  #   build:
-  #     context: ./backend/post-service
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3002"
-  #     - "4000"
-  #   environment:
-  #     - NODE_ENV=development
-  #     - CONSUL_HOST=consul
-  #     - CONSUL_PORT=8500
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://post-service:3002/health"]
-  #     interval: 10s
-  #     retries: 5
-  #     start_period: 5s
-  #   networks:
-  #     - dev-network
-  #   depends_on:
-  #     - redis
-  #     - mongo1
-  #     - mongo2
-  #     - mongo3
-  #     - consul
-  #   deploy:
-  #     replicas: 3 # Run 3 instances of Post Service
-  #   restart: always
   document-service:
     build:
       context: ./backend/document-service

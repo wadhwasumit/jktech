@@ -1,50 +1,71 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { UsersService } from '../../services/users.service';
-import { User,UserRole } from '../../models/user.model';
+import { User, UserRole } from '../../models/user.model';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSpinner } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTableModule } from '@angular/material/table';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
-import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { RoleDialogComponent } from './update-role.component';
 
 @Component({
   selector: 'app-user-list',
-  imports: [ CommonModule,MatSpinner, RouterModule, MatMenuModule, MatDividerModule, MatIconModule,  MatCardModule, MatChipsModule, MatTableModule ],
+  standalone: true,
+  imports: [
+    FormsModule,
+    RouterModule,
+    MatMenuModule,
+    MatDividerModule,
+    MatIconModule,
+    MatCardModule,
+    MatChipsModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './users-list.component.html',
   styles: [`
     .list-container {
       padding: 24px;
     }
-    
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
     }
-    
     .table-card {
       margin-top: 16px;
     }
-    
     .loading {
       display: flex;
       justify-content: center;
       padding: 40px;
     }
-    
     .full-width {
       width: 100%;
     }
-    
     .delete-action {
       color: #f44336;
+    }
+    .role-dialog {
+      margin-top: 16px;
+      padding: 16px;
+      background: #fafafa;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      max-width: 320px;
     }
   `]
 })
@@ -52,9 +73,14 @@ export class UserListComponent implements OnInit {
   users: User[] = [];
   displayedColumns: string[] = ['name', 'email', 'role', 'createdAt', 'isActive', 'actions'];
   isLoading = false;
-  private usersService=inject(UsersService)
-  private dialog= inject(MatDialog)
-  private snackBar=inject(MatSnackBar)
+  private dialog = inject(MatDialog);
+  private usersService = inject(UsersService);
+  private snackBar = inject(MatSnackBar);
+
+  roles: UserRole[] = [UserRole.ADMIN,UserRole.EDITOR,UserRole.VIEWER]; // Adjust as needed
+  selectedUser: User | null = null;
+  selectedRole: UserRole | null = null;
+  showRoleDialog = false;
 
   ngOnInit(): void {
     this.loadUsers();
@@ -74,10 +100,46 @@ export class UserListComponent implements OnInit {
     });
   }
 
+  openRoleDialog(user: User) {
+    const dialogRef = this.dialog.open(RoleDialogComponent, {
+      width: '400px',
+      data: { role: user.role }
+    });
 
-  
-  editUserRole(user: User): void {
-    // Navigate to edit form or open dialog
+    dialogRef.afterClosed().subscribe((result: UserRole | undefined) => {
+      if (result && result !== user.role) {
+        this.usersService.updateUserRole(user.id, result).subscribe({
+          next: () => {
+            user.role = result;
+            this.snackBar.open('Role updated', 'Close', { duration: 3000 });
+          },
+          error: () => {
+            this.snackBar.open('Failed to update role', 'Close', { duration: 5000 });
+          }
+        });
+      }
+    });
+  }
+  // ...existing code...
+
+  closeRoleDialog() {
+    this.selectedUser = null;
+    this.selectedRole = null;
+    this.showRoleDialog = false;
+  }
+
+  updateUserRole() {
+    if (!this.selectedUser || !this.selectedRole) return;
+    this.usersService.updateUserRole(this.selectedUser.id, this.selectedRole).subscribe({
+      next: () => {
+        this.selectedUser!.role = this.selectedRole!;
+        this.closeRoleDialog();
+        this.snackBar.open('Role updated', 'Close', { duration: 3000 });
+      },
+      error: () => {
+        this.snackBar.open('Failed to update role', 'Close', { duration: 5000 });
+      }
+    });
   }
 
   deleteUser(user: User): void {

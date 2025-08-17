@@ -1,0 +1,15 @@
+ <h2 mat-dialog-title>Update Role</h2>
+<mat-dialog-content>
+    <mat-form-field appearance="fill" style="width:100%;">
+    <mat-label>Role</mat-label>
+    <mat-select [(ngModel)]="selectedRole">
+        @for (role of roles; track role) {
+        <mat-option [value]="role">{{ role }}</mat-option>
+        }
+    </mat-select>
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onUpdate()">Update</button>
+</mat-dialog-actions>
