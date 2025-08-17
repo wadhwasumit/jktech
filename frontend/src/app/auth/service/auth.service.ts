@@ -13,7 +13,7 @@ export class AuthService {
     const googleAuthUrl = 'https://accounts.google.com/o/oauth2/auth';
     const params = new HttpParams()
       .set('client_id', environment.GOOGLE_CLIENT_ID)
-      .set('redirect_uri', 'http://localhost:4200/auth/callback')
+      .set('redirect_uri', environment.GOOGLE_CALLBACK_URL)
       .set('response_type', 'code')
       .set('scope', 'email profile')
     window.location.href = `${googleAuthUrl}?${params.toString()}`;
