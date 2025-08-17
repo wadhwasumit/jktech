@@ -30,7 +30,7 @@ export class AuthService {
     const tokenUrl = 'https://oauth2.googleapis.com/token';
     const clientId = this.configService.get('GOOGLE_CLIENT_ID');
     const clientSecret = this.configService.get('GOOGLE_CLIENT_SECRET');
-    const redirectUri = 'http://localhost:4200/auth/callback';
+    const redirectUri =  this.configService.get('GOOGLE_CALLBACK_URL');
 
     const { data } = await axios.post(tokenUrl, {
       code,
