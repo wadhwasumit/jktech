@@ -1,0 +1,13 @@
+/* filepath: src/app/components/documents/document-list/document-list.component.scss */
+.container { max-width: 1200px; margin: 0 auto; padding: 16px; }
+.list-container { display: flex; flex-direction: column; gap: 24px; }
+.header { display: flex; justify-content: space-between; align-items: center; }
+.table-card { margin-top: 16px; }
+.loading { display: flex; justify-content: center; padding: 40px; }
+.full-width { width: 100%; }
+.empty-state { text-align: center; color: #888; }
+@media (max-width: 767px) {
+  .container, .list-container { padding: 8px; }
+  .header h2 { font-size: 1.1rem; }
+  .table-card { margin-top: 8px; }
+}

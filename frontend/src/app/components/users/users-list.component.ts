@@ -35,39 +35,7 @@ import { RoleDialogComponent } from './update-role.component';
     MatProgressSpinnerModule
   ],
   templateUrl: './users-list.component.html',
-  styles: [`
-    .list-container {
-      padding: 24px;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-    }
-    .table-card {
-      margin-top: 16px;
-    }
-    .loading {
-      display: flex;
-      justify-content: center;
-      padding: 40px;
-    }
-    .full-width {
-      width: 100%;
-    }
-    .delete-action {
-      color: #f44336;
-    }
-    .role-dialog {
-      margin-top: 16px;
-      padding: 16px;
-      background: #fafafa;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      max-width: 320px;
-    }
-  `]
+  styleUrl: './users-list.component.scss'
 })
 export class UserListComponent implements OnInit {
   users: User[] = [];

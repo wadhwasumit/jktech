@@ -3,10 +3,6 @@ import { PostController } from './document.controller';
 import { PostService } from './document.service';
 import { NotFoundException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { getModelToken } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Post } from './document.schema';
-import { of } from 'rxjs';
 
 describe('PostController', () => {
   let controller: DocumentController;

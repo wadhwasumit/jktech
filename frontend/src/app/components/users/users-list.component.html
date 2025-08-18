@@ -1,4 +1,4 @@
-<div class="list-container">
+<div class="container list-container">
   <div class="header">
     <h2>Users</h2>
   </div>
@@ -35,11 +35,10 @@
           <ng-container matColumnDef="isActive">
             <th mat-header-cell *matHeaderCellDef>Status</th>
             <td mat-cell *matCellDef="let user">
-              <mat-chip-listbox>
-                <mat-chip [color]="user.isActive ? 'accent' : 'warn'">
+              <mat-chip selected [color]="user.isActive ? 'accent' : 'warn'">
                   {{ user.isActive ? 'Active' : 'Not Active' }}
                 </mat-chip>
-              </mat-chip-listbox>
+                 
             </td>
           </ng-container>
           <!-- Actions Column -->
@@ -70,22 +69,5 @@
       </mat-menu>
     </mat-card-content>
   </mat-card>
-  <!-- Inline Role Dialog -->
-  @if (showRoleDialog && selectedUser) {
-    <div class="role-dialog">
-      <h3>Update Role for {{ selectedUser.name }}</h3>
-      <mat-form-field appearance="fill" style="width:100%;">
-        <mat-label>Role</mat-label>
-        <mat-select [(ngModel)]="selectedRole">
-          @for (role of roles; track role) {
-            <mat-option [value]="role">{{ role }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <div style="margin-top:16px;">
-        <button mat-raised-button color="primary" (click)="updateUserRole()">Update</button>
-        <button mat-button (click)="closeRoleDialog()">Cancel</button>
-      </div>
-    </div>
-  }
+
 </div>

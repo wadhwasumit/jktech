@@ -1,8 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { DocumentService } from '../../../services/document.service';
 import { AppDocument } from '../../../models/document.model';
-// import { AuthService } from '../../../services/auth.service';
-import { UserRole } from '../../../models/user.model';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,57 +13,52 @@ import { MatMenuModule } from '@angular/material/menu';
 import { FileSizePipe } from '../../../shared/pipes/file-size.pipe';  
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-
+import { DocumentUploadComponent } from '../document-upload/document-upload.component';
+import {MatButtonModule} from '@angular/material/button';
 @Component({
   selector: 'app-document-list',
-  imports: [ CommonModule,MatSpinner, RouterModule, MatMenuModule, MatDividerModule, MatIconModule,  MatCardModule, MatChipsModule, MatTableModule, FileSizePipe ],
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatSpinner,
+    RouterModule,
+    MatMenuModule,
+    MatDividerModule,
+    MatIconModule,
+    MatCardModule,
+    MatChipsModule,
+    MatTableModule,
+    MatButtonModule,
+    FileSizePipe
+  ],
   templateUrl: './document-list.component.html',
-  styles: [`
-    .list-container {
-      padding: 24px;
-    }
-    
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-    }
-    
-    .table-card {
-      margin-top: 16px;
-    }
-    
-    .loading {
-      display: flex;
-      justify-content: center;
-      padding: 40px;
-    }
-    
-    .full-width {
-      width: 100%;
-    }
-    
-    .delete-action {
-      color: #f44336;
-    }
-  `]
+  styleUrl: './document-list.component.scss'
 })
 export class DocumentListComponent implements OnInit {
   documents: AppDocument[] = [];
   displayedColumns: string[] = ['title', 'originalName', 'size', 'createdAt', 'isIngested', 'actions'];
   isLoading = false;
-  private documentService=inject(DocumentService)
-  // private authService=inject(AuthService)
-  private dialog= inject(MatDialog)
-  private snackBar=inject(MatSnackBar)
-  // constructor(
-  //   private documentService: DocumentService,
-  //   private authService: AuthService,
-  //   private dialog: MatDialog,
-  //   private snackBar: MatSnackBar
-  // ) {}
 
+  private readonly documentService = inject(DocumentService);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
+
+  private readonly dialog = inject(MatDialog);
+
+  openUploadDialog() {
+    const dialogRef = this.dialog.open(DocumentUploadComponent, {
+      maxWidth: '600px',
+      width: '95%',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      // Optionally reload documents if upload was successful
+      if (result === 'uploaded') {
+        this.loadDocuments();
+      }
+    });
+  }
+  
   ngOnInit(): void {
     this.loadDocuments();
   }
@@ -73,7 +66,7 @@ export class DocumentListComponent implements OnInit {
   loadDocuments(): void {
     this.isLoading = true;
     this.documentService.getAllDocuments().subscribe({
-      next: (documents) => {
+      next: documents => {
         this.documents = documents;
         this.isLoading = false;
       },
@@ -84,20 +77,15 @@ export class DocumentListComponent implements OnInit {
     });
   }
 
-  // uploadDocument(document: AppDocument): void {
-  //   // Navigate to document detail view
-  //   this.router.navigate(['/post-details', this.post._id])
-  // }
-
   viewDocument(document: AppDocument): void {
-    // Navigate to document detail view
+    this.router.navigate(['/documents', document.id]);
   }
 
   downloadDocument(doc: AppDocument): void {
     this.documentService.downloadDocument(doc.id).subscribe({
-      next: (blob) => {
+      next: blob => {
         const url = window.URL.createObjectURL(blob);
-        const a = window.document.createElement('a');
+        const a = document.createElement('a');
         a.href = url;
         a.download = doc.originalName;
         a.click();
@@ -110,7 +98,7 @@ export class DocumentListComponent implements OnInit {
   }
 
   editDocument(document: AppDocument): void {
-    // Navigate to edit form or open dialog
+    this.router.navigate(['/documents/edit', document.id]);
   }
 
   deleteDocument(document: AppDocument): void {

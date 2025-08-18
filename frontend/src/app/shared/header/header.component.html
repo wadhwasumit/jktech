@@ -1,51 +1,43 @@
-<!-- <mat-toolbar class="header">
-    <span>Blog App</span>
-    <span class="spacer"></span>
-
-    @if(authService.isAuthenticated()) {
-    <button mat-flat-button class="example-icon" aria-label="Example icon-button with login icon" (click)="logout()">
-        <mat-icon>input</mat-icon>Logout
-    </button>
-    }
-</mat-toolbar> -->
-
-<mat-toolbar color="primary" class="header">
-  <!-- Mobile menu -->
-  <button mat-icon-button class="menu-btn" [matMenuTriggerFor]="navMenu" aria-label="Open navigation">
+<mat-toolbar color="primary" class="header-toolbar">
+  <button mat-icon-button class="mobile-menu-btn" [matMenuTriggerFor]="navMenu" aria-label="Open navigation">
     <mat-icon>menu</mat-icon>
   </button>
-
-  <span class="brand" routerLink="/">Document Management App</span>
+  <span class="brand" routerLink="/dashboard">Document App</span>
   <span class="spacer"></span>
   @if (authService.isAuthenticated()) {
-  <!-- Desktop nav -->
-  
-
- 
-    <button mat-stroked-button color="accent" (click)="logout()">
-      <mat-icon>logout</mat-icon><span>Logout</span>
-    </button>
-  } 
+    <nav class="desktop-nav">
+      <a mat-button routerLink="/dashboard" routerLinkActive="active-link">Dashboard</a>
+      <a mat-button routerLink="/ingestion" routerLinkActive="active-link">Document Ingestion</a>
+      @if (authService.hasAnyRole(['admin'])) {
+        <a mat-button routerLink="/users" routerLinkActive="active-link">Users</a>
+      }
+      <button mat-stroked-button color="accent" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span class="hide-mobile">Logout</span>
+      </button>
+    </nav>
+  }
 </mat-toolbar>
-
-<!-- Mobile nav menu -->
 <mat-menu #navMenu="matMenu">
   @if (authService.isAuthenticated()) {
-  <button mat-menu-item routerLink="/dashboard">
-    <mat-icon>space_dashboard</mat-icon><span>Dashboard</span>
-  </button>
-  <!-- <button mat-menu-item routerLink="/documents">
-    <mat-icon>description</mat-icon><span>Documents</span>
-  </button> -->
-  @if (authService.hasAnyRole(['admin'])) {
-    <button mat-menu-item routerLink="/users">
-      <mat-icon>group</mat-icon><span>Users</span>
+    <button mat-menu-item routerLink="/dashboard">
+      <mat-icon>space_dashboard</mat-icon>
+      <span>Dashboard</span>
+    </button>
+    <button mat-menu-item routerLink="/ingestion">
+      <mat-icon>space_ingestion</mat-icon>
+      <span>Document Ingestion</span>
+    </button>
+    @if (authService.hasAnyRole(['admin'])) {
+      <button mat-menu-item routerLink="/users">
+        <mat-icon>group</mat-icon>
+        <span>Users</span>
+      </button>
+    }
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
     </button>
   }
-  <mat-divider></mat-divider>
-  
-    <button mat-menu-item (click)="logout()">
-      <mat-icon>logout</mat-icon><span>Logout</span>
-    </button>
-  } 
 </mat-menu>

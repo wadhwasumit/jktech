@@ -1,14 +1,16 @@
 // src/app/shared/file-upload/file-upload.component.ts
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+
 import { MatListModule } from '@angular/material/list';
-import { FileSizePipe } from '../pipes/file-size.pipe'; // see section 2
+// import { FileSizePipe } from '../pipes/file-size.pipe'; // see section 2
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatListModule, FileSizePipe],
+  imports: [CommonModule, MatIconModule,MatButtonModule, MatListModule],
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.scss']
 })
@@ -17,39 +19,40 @@ export class FileUploadComponent {
   @Input() multiple: boolean = false;
   @Output() filesSelected = new EventEmitter<File[]>();
 
-  selectedFiles: File[] = [];
-  isDragOver: boolean = false;
+  fileNames: string[] = [];
+  dragOver = false;
 
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    this.isDragOver = true;
-  }
-
-  onDragLeave(event: DragEvent): void {
-    event.preventDefault();
-    this.isDragOver = false;
-  }
-
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    this.isDragOver = false;
-    const files = Array.from(event.dataTransfer?.files || []);
-    this.handleFiles(files);
-  }
-
-  onFileSelected(event: Event): void {
+  onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    const files = Array.from(input.files || []);
+    const files = input.files ? Array.from(input.files) : [];
     this.handleFiles(files);
   }
 
-  private handleFiles(files: File[]): void {
-    this.selectedFiles = this.multiple ? [...this.selectedFiles, ...files] : files.slice(0, 1);
-    this.filesSelected.emit(this.selectedFiles);
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver = true;
   }
 
-  removeFile(index: number): void {
-    this.selectedFiles.splice(index, 1);
-    this.filesSelected.emit(this.selectedFiles);
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver = false;
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver = false;
+    const files = event.dataTransfer?.files ? Array.from(event.dataTransfer.files) : [];
+    this.handleFiles(files);
+  }
+
+  private handleFiles(files: File[]) {
+    if (!this.multiple && files.length > 1) {
+      files = [files[0]];
+    }
+    this.fileNames = files.map(f => f.name);
+    this.filesSelected.emit(files);
   }
 }

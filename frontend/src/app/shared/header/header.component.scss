@@ -1,21 +1,16 @@
-// .spacer {
-//     flex: 1 1 auto;
-// }
-
-// .header {
-//     color: var(--mat-sys-primary);
-//     background: var(--mat-sys-primary-container);
-// }
-
-.logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
-.spacer {
-      flex: 1 1 auto;
-    }
-.user-menu {
-      display: flex;
-      align-items: center;
-    }
+/* filepath: src/app/shared/header/header.component.scss */
+.header-toolbar {
+  display: flex;
+  align-items: center;
+  .brand { font-weight: bold; font-size: 1.2rem; cursor: pointer; }
+  .spacer { flex: 1 1 auto; }
+  .desktop-nav { display: flex; align-items: center; gap: 16px; }
+  .mobile-menu-btn { display: none; }
+}
+@media (max-width: 767px) {
+  .header-toolbar {
+    .desktop-nav { display: none; }
+    .mobile-menu-btn { display: inline-flex; margin-right: 8px; }
+    .hide-mobile { display: none; }
+  }
+}

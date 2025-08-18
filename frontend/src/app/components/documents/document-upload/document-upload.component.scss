@@ -1,0 +1,9 @@
+/* filepath: src/app/components/documents/document-upload/document-upload.component.scss */
+.container { max-width: 600px; margin: 0 auto; padding: 16px; }
+.form-container { display: flex; flex-direction: column; gap: 24px; }
+.full-width { width: 100%; margin-bottom: 16px; }
+.form-actions { display: flex; justify-content: flex-end; gap: 16px; margin-top: 24px; }
+@media (max-width: 767px) {
+  .container { padding: 8px; }
+  .form-actions { flex-direction: column; gap: 8px; }
+}

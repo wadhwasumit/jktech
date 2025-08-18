@@ -46,7 +46,7 @@ import { databaseConfig } from './config/database.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DocumentModule } from './document/document.module';
-// import { CacheModule } from '@nestjs/cache-manager';
+import { IngestionModule } from './ingestion/ingestion.module';
 
 @Module({
   imports: [
@@ -56,10 +56,10 @@ import { DocumentModule } from './document/document.module';
     }),
     TypeOrmModule.forRoot(databaseConfig),
     ConsulModule,
-    DocumentModule  
+    DocumentModule  ,
+    IngestionModule
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
-  // exports: [CacheModule]
 })
 export class AppModule {}

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, Inject, UseGuards, Request, Res, Put,Delete,UploadedFile,UseInterceptors, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, Request, Res, Put,Delete,UploadedFile,UseInterceptors, NotFoundException } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse,ApiConsumes } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { TcpClientService } from './tcp-client.service';
@@ -292,6 +292,7 @@ export class AppController {
    *     summary: Mark documents as ingested
    *     description: Sets isIngested = true for given IDs
    */
+  @Throttle({ limit: { limit: 5, ttl: 60 } })
   @Patch('documents/ingested')
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
@@ -306,4 +307,49 @@ export class AppController {
   async markDocumentsIngested(@Body('ids') ids: string[]) {
     return this.tcpClientService.sendDocumentReq({ cmd: 'mark_documents_ingested' }, { ids });
   }
+
+  @Throttle({ limit: { limit: 5, ttl: 60 } })
+  @Post('ingestion/job/trigger')
+  // @Roles('ADMIN', 'EDITOR')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Trigger a document ingestion request', description: 'Trigger a document ingestion request by document IDs' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: { documentIds: { type: 'array', items: { type: 'string' } } },
+      required: ['documentIds'],
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Document ingestion triggered successfully' })
+  @ApiResponse({ status: 404, description: 'Document not found' })
+  async trigger(@Request() req: any, @Body() documentIds: string[]) {
+    return this.tcpClientService.sendDocumentReq({ cmd: 'trigger_job' }, { dto:documentIds,user: req.user});
+  }
+
+  @Get('ingestion/job/status/:jobId')
+  // @Roles('ADMIN', 'EDITOR', 'VIEWER')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Trigger a document ingestion request', description: 'Trigger a document ingestion request by document IDs' })
+  @ApiParam({ name: 'jobId', required: true, description: 'Job ID', example: '65e1234abcd56789efgh' })
+  @ApiResponse({ status: 200, description: 'Document ingestion triggered successfully' })
+  @ApiResponse({ status: 404, description: 'Document not found' })
+  async status(@Request() req: any, @Param('jobId') jobId: string) {
+    return this.tcpClientService.sendDocumentReq({ cmd: 'get_job_status' }, { jobId, user: req.user });
+  }
+
+  @Get('ingestion/jobs')
+  // @Roles('ADMIN', 'EDITOR')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Trigger a document ingestion request', description: 'Trigger a document ingestion request by document IDs' })
+  @ApiParam({ name: 'id', required: true, description: 'Document ID', example: '65e1234abcd56789efgh' })
+  @ApiParam({ name: 'id', required: true, description: 'Document ID', example: '65e1234abcd56789efgh' })
+  @ApiResponse({ status: 200, description: 'Document ingestion triggered successfully' })
+  @ApiResponse({ status: 404, description: 'Document not found' })
+  async list(@Request() req: any, @Query('limit') limit = 50, @Query('offset') offset = 0) {
+    return this.tcpClientService.sendDocumentReq({ cmd: 'list_jobs' }, { user: req.user, limit: Number(limit), offset: Number(offset) });
+  }
+
 }

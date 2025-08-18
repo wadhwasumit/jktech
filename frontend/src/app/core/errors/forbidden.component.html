@@ -1,0 +1,26 @@
+<main class="forbidden">
+  <mat-card class="card">
+    <div class="icon-wrap">
+      <mat-icon class="icon">lock</mat-icon>
+    </div>
+
+    <h1>403 — Forbidden</h1>
+    <p>You don’t have permission to access this page.</p>
+
+    <p class="muted" *ngIf="attemptedPath() && attemptedPath() !== '/forbidden'">
+      Attempted URL: <code>{{ attemptedPath() }}</code>
+    </p>
+
+    <div class="actions">
+      <a mat-flat-button color="primary" [routerLink]="dashboardLink">
+        <mat-icon>dashboard</mat-icon>
+        <span>Go to Dashboard</span>
+      </a>
+
+      <a mat-stroked-button [routerLink]="['/auth/login']" [queryParams]="{ returnUrl: returnUrl }">
+        <mat-icon>login</mat-icon>
+        <span>Sign in</span>
+      </a>
+    </div>
+  </mat-card>
+</main>

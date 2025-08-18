@@ -1,46 +1,52 @@
-// @ts-nocheck
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Pipe, PipeTransform, Injectable, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, Directive, Input, Output } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { By } from '@angular/platform-browser';
-import { Observable, of as observableOf, throwError } from 'rxjs';
-
-import { Component } from '@angular/core';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { HeaderComponent } from './header.component';
-import { provideHttpClient } from '@angular/common/http';
-
+import { AuthService } from '../../auth/service/auth.service';
 
 describe('HeaderComponent', () => {
-  let fixture;
-  let component;
+  let fixture: ComponentFixture<HeaderComponent>;
+  let component: HeaderComponent;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [ FormsModule, ReactiveFormsModule ],
+  // Jasmine spy for AuthService
+  let authMock: jasmine.SpyObj<AuthService>;
 
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA ],
-      providers: [
-provideHttpClient()
-      ]
-    }).overrideComponent(HeaderComponent, {
+  beforeEach(async () => {
+    authMock = jasmine.createSpyObj<AuthService>('AuthService', ['isAuthenticated', 'logout']);
+    authMock.isAuthenticated.and.returnValue(true); // default for most tests
 
+    await TestBed.configureTestingModule({
+      // ✅ If HeaderComponent is standalone, just import it:
+      imports: [HeaderComponent],
+      providers: [{ provide: AuthService, useValue: authMock }],
     }).compileComponents();
+
     fixture = TestBed.createComponent(HeaderComponent);
-    component = fixture.debugElement.componentInstance;
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
-
-
-  it('should run #constructor()', async () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should run #logout()', async () => {
-    component.authService = component.authService || {};
-    component.authService.logout = jest.fn();
-    component.logout();
-    expect(component.authService.logout).toHaveBeenCalled();
+  it('should initialize isLoggedIn from AuthService (true)', () => {
+    // set in beforeEach
+    expect(authMock.isAuthenticated).toHaveBeenCalled();
+    expect(component.isLoggedIn).toBeTrue();
   });
 
+  it('should initialize isLoggedIn from AuthService (false)', () => {
+    // Create a new instance with a different return value
+    authMock.isAuthenticated.and.returnValue(false);
+    const fx = TestBed.createComponent(HeaderComponent);
+    const cmp = fx.componentInstance;
+    fx.detectChanges();
+
+    expect(authMock.isAuthenticated).toHaveBeenCalled();
+    expect(cmp.isLoggedIn).toBeFalse();
+  });
+
+  it('logout() should call AuthService.logout()', () => {
+    component.logout();
+    expect(authMock.logout).toHaveBeenCalled();
+  });
 });

@@ -1,38 +1,30 @@
-<div class="upload-area" 
-         (dragover)="onDragOver($event)" 
-         (dragleave)="onDragLeave($event)"
-         (drop)="onDrop($event)"
-         [class.drag-over]="isDragOver">
-      
-      <input #fileInput 
-             type="file" 
-             [accept]="acceptedTypes" 
-             [multiple]="multiple"
-             (change)="onFileSelected($event)"
-             style="display: none;">
-      
-      <div class="upload-content">
-        <mat-icon class="upload-icon">cloud_upload</mat-icon>
-        <p>Drag and drop files here or</p>
-        <button mat-raised-button color="primary" (click)="fileInput.click()">
-          Browse Files
-        </button>
-        <p class="upload-info" *ngIf="acceptedTypes">
-          Accepted types: {{ acceptedTypes }}
-        </p>
+<div
+      class="file-upload"
+      [class.drag-over]="dragOver"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      <input
+        type="file"
+        [attr.accept]="acceptedTypes"
+        [attr.multiple]="multiple ? '' : null"
+        (change)="onFileChange($event)"
+        #fileInput
+        hidden
+      />
+      <button mat-raised-button color="primary" type="button" (click)="fileInput.click()">
+        <mat-icon>upload_file</mat-icon>
+        <span>{{ multiple ? 'Select Files' : 'Select File' }}</span>
+      </button>
+      <div class="drag-text">
+        <mat-icon>drag_indicator</mat-icon>
+        <span>or drag & drop {{ multiple ? 'files' : 'a file' }} here</span>
       </div>
-    </div>
-    
-    <div *ngIf="selectedFiles.length > 0" class="selected-files">
-      <h4>Selected Files:</h4>
-      <mat-list>
-        <mat-list-item *ngFor="let file of selectedFiles; let i = index">
-          <mat-icon matListIcon>description</mat-icon>
-          <div matLine>{{ file.name }}</div>
-          <div matLine class="file-size">{{ file.size | fileSize }}</div>
-          <button mat-icon-button (click)="removeFile(i)">
-            <mat-icon>close</mat-icon>
-          </button>
-        </mat-list-item>
-      </mat-list>
+      @if (fileNames.length > 0) {
+        <div class="selected-files">
+          <mat-icon>attach_file</mat-icon>
+          <span>{{ fileNames.join(', ') }}</span>
+        </div>
+      }
     </div>

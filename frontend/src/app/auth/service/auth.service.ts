@@ -48,9 +48,7 @@ export class AuthService {
   }
   hasAnyRole(roles: string[]): boolean {
     const userRole = sessionStorage.getItem('role');
-    if (!userRole) return false;
-    console.log('Checking roles:',roles, roles.includes(userRole));
-    
+    if (!userRole) return false;    
     return roles.includes(userRole);
   }
 }

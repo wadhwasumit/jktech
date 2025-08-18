@@ -1,15 +1,16 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { IngestionStatus } from '../common/enums/ingestion-status.enum';
-import { User } from './user.entity';
+
+export type IngestedDocument = { id: string; name: string };
 
 @Entity('ingestion_jobs')
 export class IngestionJob {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  documentIds: string; // JSON string array
-
+  @Column({ type: 'jsonb', default: () => "'[]'::jsonb" })
+  ingestedDocuments: IngestedDocument[];
+ 
   @Column({
     type: 'enum',
     enum: IngestionStatus,

@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { IngestionJob } from '../entities/ingestion-job.entity';
-import { TriggerIngestionDto } from '../dtos/trigger-ingestion.dto';
+import { IngestedDocument, IngestionJob } from '../entities/ingestion-job.entity';
+import { TriggerIngestionDto} from '../dtos/trigger-ingestion.dto';
 import { User } from '../entities/user.entity';
 import { DocumentsService } from '../document/document.service';
 import { PythonMockService } from '../python-mock/python-mock.service';
@@ -25,10 +25,13 @@ export class IngestionService {
     if (documents.length !== triggerIngestionDto.documentIds.length) {
       throw new NotFoundException('One or more documents not found');
     }
-
+    const ingestedDocuments: IngestedDocument[] = documents.map(d => ({
+      id: d.id,
+      name: d.title,
+    }));
     // Create ingestion job
     const job = this.ingestionJobRepository.create({
-      documentIds: JSON.stringify(triggerIngestionDto.documentIds),
+      ingestedDocuments: ingestedDocuments,
       // createdBy: user,
       createdById: user.id,
       status: IngestionStatus.PENDING,
@@ -78,7 +81,7 @@ export class IngestionService {
     await this.ingestionJobRepository.update(jobId, updateData);
   }
 
-  async getJobStatus(jobId: string, user: User): Promise<IngestionJob> {
+  async getJob(jobId: string, user: User): Promise<IngestionJob> {
     const job = await this.ingestionJobRepository.findOne({
       where: { id: jobId },
       // relations: ['createdBy'],
@@ -95,18 +98,20 @@ export class IngestionService {
     return job;
   }
 
-  async getAllJobs(user: User): Promise<IngestionJob[]> {
-    if (user.role === UserRole.ADMIN) {
-      return await this.ingestionJobRepository.find({
-        // relations: ['createdBy'],
-        order: { createdAt: 'DESC' },
-      });
-    }
+  async getAllJobs(user: User,limit:number,offset:number): Promise<IngestionJob[]> {
+    const baseOptions: any = {
+    order: { createdAt: 'DESC' },
+    skip: offset,   // number of rows to skip
+    take: limit,    // number of rows to fetch
+  };
 
-    return await this.ingestionJobRepository.find({
-      where: { createdById: user.id },
-      // relations: ['createdBy'],
-      order: { createdAt: 'DESC' },
-    });
+  if (user.role === UserRole.ADMIN) {
+    return await this.ingestionJobRepository.find(baseOptions);
+  }
+
+  return await this.ingestionJobRepository.find({
+    ...baseOptions,
+    where: { createdById: user.id },
+  });
   }
 }
