@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import {
   provideHttpClientTesting,
   HttpTestingController,
@@ -11,7 +12,7 @@ describe('DocumentService', () => {
   let service: DocumentService;
   let http: HttpTestingController;
 
-  const envMock: Partial<EnvService> = { apiUrl: 'http://localhost/api' };
+  const envMock: Partial<EnvService> = { apiUrl: 'http://localhost:4200/api' };
   const base = envMock.apiUrl as string;
 
   beforeEach(() => {
@@ -19,6 +20,7 @@ describe('DocumentService', () => {
       providers: [
         DocumentService,
         { provide: EnvService, useValue: envMock },
+        provideHttpClient(), 
         provideHttpClientTesting(),
       ],
     });
@@ -73,7 +75,7 @@ describe('DocumentService', () => {
     expect(req.request.method).toBe('POST');
 
     const body = req.request.body as FormData;
-    expect(body instanceof FormData).toBeTrue();
+    expect(body instanceof FormData).toBe(true);
     expect(body.get('title')).toBe('Test');
     expect(body.get('description')).toBe('Desc');
 
@@ -83,7 +85,7 @@ describe('DocumentService', () => {
     expect(sentFile.type).toBe('application/pdf');
 
     req.flush({ id: 'new' });
-    expect(ok).toBeTrue();
+    expect(ok).toBe(true);
   });
 
   it('uploadDocument() should omit description when not provided', () => {
@@ -97,7 +99,7 @@ describe('DocumentService', () => {
     const body = req.request.body as FormData;
     expect(body.get('title')).toBe('NoDesc');
     // description should not be present
-    expect((body as any).has('description')).toBeFalse();
+    expect((body as any).has('description')).toBe(false);
 
     req.flush({ id: 'new2' });
   });
@@ -113,7 +115,7 @@ describe('DocumentService', () => {
     expect(req.request.body).toEqual(patch);
 
     req.flush({ id: '7', ...patch });
-    expect(ok).toBeTrue();
+    expect(ok).toBe(true);
   });
 
   it('deleteDocument() should DELETE by id', () => {
@@ -125,7 +127,7 @@ describe('DocumentService', () => {
     expect(req.request.method).toBe('DELETE');
 
     req.flush(null);
-    expect(completed).toBeTrue();
+    expect(completed).toBe(true);
   });
 
   it('downloadDocument() should GET blob with responseType "blob"', () => {
@@ -141,7 +143,7 @@ describe('DocumentService', () => {
     req.flush(blob);
 
     expect(result).toBeTruthy();
-    expect(result instanceof Blob).toBeTrue();
+    expect(result instanceof Blob).toBe(true);
     expect(result!.type).toBe('application/pdf');
   });
 

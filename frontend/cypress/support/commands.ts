@@ -1,37 +1,36 @@
-/// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      oauthStubLogin(role?: 'editor' | 'admin'): Chainable<void>;
+    }
+  }
+}
+
+Cypress.Commands.add('oauthStubLogin', (role: 'editor' | 'admin' | 'viewwer' = 'editor') => {
+  const api = Cypress.env('API_URL') || 'http://localhost:4200'; // match your env.apiUrl
+
+  cy.intercept('POST', `${api}/auth/google`, (req) => {
+    req.reply({ fixture: role === 'admin'
+      ? 'auth/google-success-admin.json'
+      : 'auth/google-success.json'
+    });
+  }).as('googleExchange');
+  cy.visit('/auth/login');
+  cy.get('[data-cy="btnGoogleLogin"]').click(); // no #
+// But you'll still need cy.visit('/auth/callback?...') unless you automate the real Google page with cy.origin().
+
+  // Hit your real callback route with a fake "code"
+//   cy.visit('/auth/callback?code=fake-code');
+
+  // Wait for the exchange to complete
+  cy.wait('@googleExchange');
+
+  // Ensure app considered us logged in (it should redirect to dashboard)
+  cy.url().should('include', '/dashboard');
+
+  // Optional: assert session storage
+  cy.window().then((win) => {
+    expect(win.sessionStorage.getItem('jwt')).to.be.a('string');
+    expect(win.sessionStorage.getItem('role')).to.be.oneOf(['editor','admin']);
+  });
+});

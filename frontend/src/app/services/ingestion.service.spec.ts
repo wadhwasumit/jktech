@@ -1,5 +1,8 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import {
+  provideHttpClient
+} from '@angular/common/http';
+import {
   provideHttpClientTesting,
   HttpTestingController,
 } from '@angular/common/http/testing';
@@ -15,6 +18,7 @@ describe('IngestionApiService', () => {
     TestBed.configureTestingModule({
       providers: [
         IngestionApiService,
+        provideHttpClient(), // provides HttpClient
         provideHttpClientTesting(), // provides HttpClient + HttpTestingController
       ],
     });

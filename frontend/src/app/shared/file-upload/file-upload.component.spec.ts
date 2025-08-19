@@ -1,14 +1,17 @@
+// src/app/shared/file-upload/file-upload.component.spec.ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FileUploadComponent } from './file-upload.component';
+// If TS complains about "jest", add "types": ["jest","node"] to tsconfig.spec.json
+// or uncomment the next line:
+// import { jest } from '@jest/globals';
 
-describe('FileUploadComponent', () => {
+describe('FileUploadComponent (Jest)', () => {
   let fixture: ComponentFixture<FileUploadComponent>;
   let component: FileUploadComponent;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      // Standalone component: just import it
-      imports: [FileUploadComponent],
+      imports: [FileUploadComponent], // standalone
     }).compileComponents();
 
     fixture = TestBed.createComponent(FileUploadComponent);
@@ -16,52 +19,61 @@ describe('FileUploadComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
     expect(component.acceptedTypes).toBe('');
-    expect(component.multiple).toBeFalse();
+    expect(component.multiple).toBe(false);
   });
 
   describe('onFileChange', () => {
-    it('should emit a single file when multiple=false and update fileNames', () => {
+    it('emits a single file when multiple=false and updates fileNames', () => {
       component.multiple = false;
       const f1 = new File(['a'], 'a.txt', { type: 'text/plain' });
       const f2 = new File(['b'], 'b.txt', { type: 'text/plain' });
 
-      const emitSpy = spyOn(component.filesSelected, 'emit');
+      const emitSpy = jest.spyOn(component.filesSelected, 'emit');
 
-      // Simulate <input type="file"> change event
       const event = { target: { files: [f1, f2] } } as any;
       component.onFileChange(event);
 
       expect(component.fileNames).toEqual(['a.txt']);
       expect(emitSpy).toHaveBeenCalledTimes(1);
-      const emitted = (emitSpy.calls.mostRecent().args[0] as File[]);
+
+      const lastCall = emitSpy.mock.calls[emitSpy.mock.calls.length - 1];
+      const emitted = lastCall?.[0] as File[];
       expect(emitted.length).toBe(1);
       expect(emitted[0].name).toBe('a.txt');
     });
 
-    it('should emit all files when multiple=true', () => {
+    it('emits all files when multiple=true', () => {
       component.multiple = true;
       const f1 = new File(['a'], 'a.txt');
       const f2 = new File(['b'], 'b.txt');
 
-      const emitSpy = spyOn(component.filesSelected, 'emit');
+      const emitSpy = jest.spyOn(component.filesSelected, 'emit');
       const event = { target: { files: [f1, f2] } } as any;
+
       component.onFileChange(event);
 
       expect(component.fileNames).toEqual(['a.txt', 'b.txt']);
-      const emitted = (emitSpy.calls.mostRecent().args[0] as File[]);
+      const lastCall = emitSpy.mock.calls[emitSpy.mock.calls.length - 1];
+      const emitted = lastCall?.[0] as File[];
       expect(emitted.map(f => f.name)).toEqual(['a.txt', 'b.txt']);
     });
 
-    it('should handle empty selection', () => {
-      const emitSpy = spyOn(component.filesSelected, 'emit');
+    it('handles empty selection', () => {
+      const emitSpy = jest.spyOn(component.filesSelected, 'emit');
       const event = { target: { files: [] } } as any;
+
       component.onFileChange(event);
 
       expect(component.fileNames).toEqual([]);
-      const emitted = (emitSpy.calls.mostRecent().args[0] as File[]);
+      const lastCall = emitSpy.mock.calls[emitSpy.mock.calls.length - 1];
+      const emitted = lastCall?.[0] as File[];
       expect(emitted).toEqual([]);
     });
   });
@@ -75,32 +87,34 @@ describe('FileUploadComponent', () => {
       } as any;
     }
 
-    it('onDragOver should set dragOver=true', () => {
+    it('onDragOver sets dragOver=true', () => {
       const ev = makeDragEvent();
       component.onDragOver(ev);
-      expect(component.dragOver).toBeTrue();
+      expect(component.dragOver).toBe(true);
     });
 
-    it('onDragLeave should set dragOver=false', () => {
+    it('onDragLeave sets dragOver=false', () => {
       component.dragOver = true;
       const ev = makeDragEvent();
       component.onDragLeave(ev);
-      expect(component.dragOver).toBeFalse();
+      expect(component.dragOver).toBe(false);
     });
 
-    it('onDrop should emit files and reset dragOver', () => {
+    it('onDrop emits files and resets dragOver', () => {
       component.dragOver = true;
       const f1 = new File(['a'], 'a.txt');
       const f2 = new File(['b'], 'b.txt');
-      const emitSpy = spyOn(component.filesSelected, 'emit');
+      const emitSpy = jest.spyOn(component.filesSelected, 'emit');
 
       const ev = makeDragEvent([f1, f2]);
       component.multiple = true;
       component.onDrop(ev);
 
-      expect(component.dragOver).toBeFalse();
+      expect(component.dragOver).toBe(false);
       expect(component.fileNames).toEqual(['a.txt', 'b.txt']);
-      const emitted = (emitSpy.calls.mostRecent().args[0] as File[]);
+
+      const lastCall = emitSpy.mock.calls[emitSpy.mock.calls.length - 1];
+      const emitted = lastCall?.[0] as File[];
       expect(emitted.map(f => f.name)).toEqual(['a.txt', 'b.txt']);
     });
 
@@ -108,13 +122,15 @@ describe('FileUploadComponent', () => {
       component.multiple = false;
       const f1 = new File(['a'], 'a.txt');
       const f2 = new File(['b'], 'b.txt');
-      const emitSpy = spyOn(component.filesSelected, 'emit');
+      const emitSpy = jest.spyOn(component.filesSelected, 'emit');
 
       const ev = makeDragEvent([f1, f2]);
       component.onDrop(ev);
 
       expect(component.fileNames).toEqual(['a.txt']);
-      const emitted = (emitSpy.calls.mostRecent().args[0] as File[]);
+
+      const lastCall = emitSpy.mock.calls[emitSpy.mock.calls.length - 1];
+      const emitted = lastCall?.[0] as File[];
       expect(emitted.length).toBe(1);
       expect(emitted[0].name).toBe('a.txt');
     });

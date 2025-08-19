@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "title": "Doc A",
+    "originalName": "a.txt",
+    "size": 1234,
+    "createdAt": "2025-01-01T10:00:00.000Z",
+    "isIngested": true
+  },
+  {
+    "id": "2",
+    "title": "Doc B",
+    "originalName": "b.txt",
+    "size": 5678,
+    "createdAt": "2025-01-02T10:00:00.000Z",
+    "isIngested": false
+  }
+]

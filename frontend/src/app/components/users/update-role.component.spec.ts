@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RoleDialogComponent } from './update-role.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { UserRole } from '../../models/user.model';
 
 describe('RoleDialogComponent', () => {
   let component: RoleDialogComponent;
@@ -37,7 +38,7 @@ describe('RoleDialogComponent', () => {
   });
 
   it('should close dialog with selectedRole on update', () => {
-    component.selectedRole = 'editor';
+    component.selectedRole = UserRole.EDITOR;
     component.onUpdate();
     expect(dialogRefMock.close).toHaveBeenCalledWith('editor');
   });

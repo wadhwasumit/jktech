@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  postapp-dev-container:
-    container_name: postapp-dev-container
+  documentapp-dev-container:
+    container_name: documentapp-dev-container
     build:
       context: .
       dockerfile: ./backend/.devcontainer/Dockerfile
@@ -22,10 +22,10 @@ services:
       - NODE_ENV=development
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
+      - JWT_SECRET=123456
+      - JWT_EXPIRES_IN=1h
     networks:
       - dev-network
-    env_file:
-      - ./backend/api-gateway/.env
     depends_on:
       document-service:
         condition: service_healthy
@@ -41,6 +41,7 @@ services:
       - NODE_ENV=development
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
+      
     healthcheck:
       test: ["CMD", "curl", "-f", "http://document-service:3006/health"]
       interval: 10s
@@ -90,10 +91,16 @@ services:
     ports:
       - "3003:3003"
       - "3004:3004"
-    env_file:
-      - ./backend/auth-service/.env
+    environment:
+      - NODE_ENV=development
+      - CONSUL_HOST=consul
+      - GOOGLE_CLIENT_ID=1017930346997-tifltb4soguftq2tap5a462si3c0krh6.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
+      - GOOGLE_CALLBACK_URL=http://localhost:4200/auth/callback
+      - JWT_SECRET=123456
+      - JWT_EXPIRES_IN=1h
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/auth_db?schema=public
     depends_on:
-      # - mongo1
       - consul
       - postgres
     networks:

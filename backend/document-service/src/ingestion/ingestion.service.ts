@@ -7,7 +7,7 @@ import { User } from '../entities/user.entity';
 import { DocumentsService } from '../document/document.service';
 import { PythonMockService } from '../python-mock/python-mock.service';
 import { IngestionStatus } from '../common/enums/ingestion-status.enum';
-import { UserRole } from 'src/common/enums/user-role.enum';
+import { UserRole } from '../common/enums/user-role.enum';
 
 @Injectable()
 export class IngestionService {

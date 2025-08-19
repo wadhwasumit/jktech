@@ -92,7 +92,7 @@ export class DocumentsService {
   }
 
   async findByIds(ids: string[]): Promise<Document[]> {
-    return await this.documentRepository.findByIds(ids);
+    return await this.documentRepository.findBy({ id: In(ids) });
   }
 
   async markAsIngested(ids: string[]): Promise<void> {

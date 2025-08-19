@@ -1,6 +1,6 @@
-# Post-App Backend
+# Document-App Backend
 
-This repository contains the backend services for the Post-App application, designed with a microservices architecture. It leverages Docker Compose for orchestration and includes services for authentication, post management, an API gateway, and database management using MongoDB and PostgreSQL.
+This repository contains the backend services for the Document-App application, designed with a microservices architecture. It leverages Docker Compose for orchestration and includes services for authentication, document management, an API gateway, and database management using MongoDB and PostgreSQL.
 
 ## Table of Contents
 
@@ -8,13 +8,11 @@ This repository contains the backend services for the Post-App application, desi
 - [Services](#services)
   - [API Gateway](#api-gateway)
   - [Auth Service](#auth-service)
-  - [Post Service](#post-service)
+  - [Document Service](#document-service)
 - [Databases](#databases)
-  - [MongoDB](#mongodb)
   - [PostgreSQL](#postgresql)
 - [Configuration Files](#configuration-files)
   - [Docker Compose](#docker-compose)
-  - [MongoDB Initialization](#mongodb-initialization)
   - [PostgreSQL Configuration](#postgresql-configuration)
   - [Prometheus Configuration](#prometheus-configuration)
   - [Redis Configuration](#redis-configuration)
@@ -35,8 +33,7 @@ The backend is structured into multiple services to promote scalability and main
 
 - **API Gateway**: Manages incoming requests and routes them to the appropriate services.
 - **Auth Service**: Handles user authentication and authorization.
-- **Post Service**: Manages operations related to posts.
-- **MongoDB**: NoSQL database for storing application data.
+- **Document Service**: Manages operations related to documents.
 - **PostgreSQL**: SQL database for relational data storage.
 - **Redis**: In-memory caching and message brokering.
 - **Prometheus & Grafana**: Monitoring and analytics.
@@ -57,17 +54,11 @@ Found in the `auth-service` directory, this service is responsible for user auth
 
 ### Post Service
 
-Situated in the `post-service` directory, this service handles all operations related to posts, including creation, retrieval, updating, and deletion.
+Situated in the `document-service` directory, this service handles all operations related to documents, including creation, retrieval, updating, and deletion.
 
 ---
 
 ## Databases
-
-### MongoDB
-
-- Used for storing unstructured and semi-structured data.
-- Defined in `docker-compose.yml` as the `mongodb` service.
-- The `mongo-init.sh` script initializes the database with required configurations.
 
 ### PostgreSQL
 
@@ -86,17 +77,12 @@ The `docker-compose.yml` file orchestrates the various services and dependencies
 - **Services**:
   - `api-gateway`
   - `auth-service`
-  - `post-service`
-  - `mongodb`: NoSQL database.
+  - `document-service`
   - `postgres`: Relational database.
   - `redis`: In-memory caching and pub/sub.
   - `pgadmin`: Web-based UI for managing PostgreSQL.
   - `prometheus`: Monitoring system.
   - `grafana`: Dashboard visualization.
-
-### MongoDB Initialization
-
-The `mongo-init.sh` script initializes the MongoDB instance with necessary configurations and seed data.
 
 ### PostgreSQL Configuration
 
@@ -126,4 +112,4 @@ To run the application locally:
 1. Ensure Docker and Docker Compose are installed on your system.
 2. Clone the repository:
    ```sh
-   git clone https://github.com/AtulFalle/post-app-be.git
+   git clone https://github.com/wadhwasumit/jktech.git

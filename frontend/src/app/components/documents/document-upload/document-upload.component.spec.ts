@@ -4,7 +4,7 @@ import { DocumentService } from '../../../services/document.service';
 import { of, throwError } from 'rxjs';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogRef } from '@angular/material/dialog';
-
+import { jest } from '@jest/globals';
 describe('DocumentUploadComponent', () => {
   let component: DocumentUploadComponent;
   let fixture: ComponentFixture<DocumentUploadComponent>;

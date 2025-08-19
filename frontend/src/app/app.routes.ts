@@ -22,53 +22,52 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./core/errors/not-found.component').then(m => m.NotFoundComponent),
   },
+  {
+  path: 'users',
+  title: 'Users',
+  canActivate: [AuthGuard, RoleGuard],
+  data: { roles: ['admin'] },
+  loadComponent: () =>
+    import('./components/users/users-list.component')
+      .then(m => m.UserListComponent),
+},
+{
+  path: 'dashboard',
+  title: 'Dashboard',
+  canActivate: [AuthGuard],
+  loadComponent: () =>
+    import('./components/documents/document-list/document-list.component')
+      .then(m => m.DocumentListComponent),
+},
+{
+  path: 'documents',
+  canActivate: [AuthGuard],
+  children: [
+    {
+      path: '',
+      title: 'Documents',
+      loadComponent: () =>
+        import('./components/documents/document-list/document-list.component')
+          .then(m => m.DocumentListComponent),
+    },
+    {
+      path: 'upload',
+      title: 'Upload Document',
+      loadComponent: () =>
+        import('./components/documents/document-upload/document-upload.component')
+          .then(m => m.DocumentUploadComponent),
+    },
+  ],
+},
+{
+  path: 'ingestion',
+  title: 'Ingestion Manager',
+  canActivate: [AuthGuard],
+  loadComponent: () =>
+    import('./components/ingestion/ingestion-manager.component')
+      .then(m => m.IngestionManagerComponent),
+},
 
-  // Protected pages (all lazy standalone + canMatch)
-  {
-    path: 'dashboard',
-    title: 'Dashboard',
-    canMatch: [AuthGuard],
-    loadComponent: () =>
-      import('./components/documents/document-list/document-list.component')
-        .then(m => m.DocumentListComponent),
-  },
-  {
-    path: 'documents',
-    canMatch: [AuthGuard],
-    children: [
-      {
-        path: '',
-        title: 'Documents',
-        loadComponent: () =>
-          import('./components/documents/document-list/document-list.component')
-            .then(m => m.DocumentListComponent),
-      },
-      {
-        path: 'upload',
-        title: 'Upload Document',
-        loadComponent: () =>
-          import('./components/documents/document-upload/document-upload.component')
-            .then(m => m.DocumentUploadComponent),
-      },
-    ],
-  },
-  {
-    path: 'ingestion',
-    title: 'Ingestion Manager',
-    canMatch: [AuthGuard],
-    loadComponent: () =>
-      import('./components/ingestion/ingestion-manager.component')
-        .then(m => m.IngestionManagerComponent),
-  },
-  {
-    path: 'users',
-    title: 'Users',
-    canMatch: [AuthGuard, RoleGuard],
-    data: { roles: ['admin'] },
-    loadComponent: () =>
-      import('./components/users/users-list.component')
-        .then(m => m.UserListComponent),
-  },
 
   // Defaults & fallback
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },

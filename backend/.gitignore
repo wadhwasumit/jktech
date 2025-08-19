@@ -1,6 +1,6 @@
 # Node.js dependencies
 api-gateway/node_modules/
-post-service/node_modules/
+document-service/node_modules/
 node_modules/
 npm-debug.log*
 yarn-debug.log*

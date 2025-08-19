@@ -2,6 +2,6 @@ global:
   scrape_interval: 2s  # Fetch metrics every 15 seconds
 
 scrape_configs:
-  - job_name: 'post-service'
+  - job_name: 'document-service'
     static_configs:
-      - targets: ['post-service:3002']
+      - targets: ['document-service:3006']

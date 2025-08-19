@@ -8,7 +8,6 @@ RUN npm install -g @nestjs/cli
 
 # Step 4: Copy package.json and package-lock.json (or yarn.lock) to install dependencies
 COPY package*.json ./
-COPY .env .env
 
 # Step 5: Install project dependencies
 RUN npm install --force

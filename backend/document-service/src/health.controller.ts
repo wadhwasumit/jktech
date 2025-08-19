@@ -1,6 +1,4 @@
 import { Controller, Get } from '@nestjs/common';
-// import { InjectConnection } from '@nestjs/mongoose';
-// import { Connection } from 'mongoose';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 

@@ -1,0 +1,4 @@
+[
+  { "id": "u1", "name": "Alice", "email": "a@x.com", "role": "VIEWER", "isActive": true, "createdAt": "", "updatedAt": "" },
+  { "id": "u2", "name": "Bob",   "email": "b@x.com", "role": "ADMIN",  "isActive": true, "createdAt": "", "updatedAt": "" }
+]
