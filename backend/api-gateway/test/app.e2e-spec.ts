@@ -61,13 +61,14 @@ describe('AppController (e2e)', () => {
 
     const res = await request(app.getHttpServer())
       .post('/auth/google')
+      .set('Origin', 'http://localhost') 
       .send({ code: 'code-123' })
       .expect(201); // Nest default for POST handler that returns a body
 
     expect(res.body).toEqual({ token: 'abc' });
     expect(tcp.sendAuthReq).toHaveBeenCalledWith(
       { cmd: 'get_auth_token' },
-      { code: 'code-123' },
+      { code: 'code-123' ,origin: 'http://localhost' },
     );
   });
 

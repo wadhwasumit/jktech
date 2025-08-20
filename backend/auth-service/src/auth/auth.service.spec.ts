@@ -134,8 +134,8 @@ describe('AuthService', () => {
 
     // 4) App JWT
     jwtServiceMock.sign.mockReturnValue('app.jwt.token');
-
-    const result = await service.getGoogleAuthToken('the-auth-code');
+    const ORIGIN = 'http://localhost';
+    const result = await service.getGoogleAuthToken('the-auth-code',ORIGIN);
 
     // Assert token POST
     expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -144,7 +144,7 @@ describe('AuthService', () => {
         code: 'the-auth-code',
         client_id: 'test-google-client-id',
         client_secret: 'test-google-client-secret',
-        redirect_uri: 'http://localhost/callback',
+        redirect_uri: 'http://localhost/auth/callback',
         grant_type: 'authorization_code',
       },
     );
@@ -194,8 +194,8 @@ describe('AuthService', () => {
         // id_token missing
       },
     });
-
-    await expect(service.getGoogleAuthToken('code')).rejects.toBeInstanceOf(UnauthorizedException);
+    const ORIGIN = 'http://localhost';
+    await expect(service.getGoogleAuthToken('code',ORIGIN)).rejects.toBeInstanceOf(UnauthorizedException);
     expect(mockedAxios.get).not.toHaveBeenCalled();
   });
 

@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { ExecutionContext } from '@nestjs/common';
+import { UserRole } from './user-role.enum';
 
 jest.mock('@nestjs/passport', () => ({
   AuthGuard: jest.fn().mockImplementation(() => {
@@ -59,19 +60,30 @@ describe('AuthController', () => {
 
   describe('googleLogin', () => {
     it('should return Google auth token', async () => {
+      const origin = 'http://localhost';
       const code = 'testCode';
-      const result = await controller.googleLogin(code);
-      expect(service.getGoogleAuthToken).toHaveBeenCalledWith(code);
-      expect(result).toEqual('mockGoogleAuthToken');
+
+      // mock the service call the controller delegates to
+      jest.spyOn(service, 'getGoogleAuthToken')
+        .mockResolvedValue({ access_token: 'jwt', id: 'u1', role: UserRole.VIEWER });
+
+      // minimal req object (only needed if your controller reads req)
+      const req = {} as any;
+
+      const result = await controller.googleLogin(req, origin, code);
+
+      expect(service.getGoogleAuthToken).toHaveBeenCalledWith(code, origin);
+      expect(result).toEqual({ access_token: 'jwt', id: 'u1', role: UserRole.VIEWER });
+
     });
   });
 
   describe('googleLoginTCP', () => {
     it('should return Google auth token via TCP', async () => {
-      const data = { code: 'testCode' };
+      const data = { code: 'testCode', origin: 'http://localhost' };
       const result = await controller.googleLoginTCP(data);
-      expect(service.getGoogleAuthToken).toHaveBeenCalledWith(data.code);
-      expect(result).toEqual('mockGoogleAuthToken');
+      expect(service.getGoogleAuthToken).toHaveBeenCalledWith(data.code, data.origin);
+      expect(result).toEqual( {"access_token": "jwt", "id": "u1", "role": "viewer"} );
     });
   });
 });

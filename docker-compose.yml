@@ -75,7 +75,7 @@ services:
       - NODE_ENV=development
       - API_URL=http://localhost:3000
       - API_PREFIX=/api
-      - GOOGLE_CLIENT_ID=1017930346997-tifltb4soguftq2tap5a462si3c0krh6.apps.googleusercontent.com
+      - GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
       - GOOGLE_CALLBACK_URL=http://localhost:4200/auth/callback
     ports:
       - "4200:80"
@@ -94,8 +94,8 @@ services:
     environment:
       - NODE_ENV=development
       - CONSUL_HOST=consul
-      - GOOGLE_CLIENT_ID=1017930346997-tifltb4soguftq2tap5a462si3c0krh6.apps.googleusercontent.com
-      - GOOGLE_CLIENT_SECRET=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
+      - GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=your-google-client-secret
       - GOOGLE_CALLBACK_URL=http://localhost:4200/auth/callback
       - JWT_SECRET=123456
       - JWT_EXPIRES_IN=1h

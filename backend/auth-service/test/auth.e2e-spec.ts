@@ -99,11 +99,12 @@ describe('Auth & Users (e2e)', () => {
 
     await request(app.getHttpServer())
       .post('/auth/google')
+      .set('Origin', 'http://localhost')   
       .send(body)
       .expect((res) => expect([200, 201]).toContain(res.status))
       .expect(result);
 
-    expect(authServiceMock.getGoogleAuthToken).toHaveBeenCalledWith('google-auth-code');
+    expect(authServiceMock.getGoogleAuthToken).toHaveBeenCalledWith('google-auth-code', 'http://localhost');
   });
 
   // ---------- USERS ----------

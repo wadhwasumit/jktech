@@ -39,10 +39,17 @@ describe('AppController', () => {
   // ---------- AUTH ----------
   it('POST /auth/google -> should request get_auth_token', async () => {
     tcp.sendAuthReq.mockReturnValue(of({ token: 'abc' }));
-    const res = await firstValueFrom(await controller.googleLogin('code-123'));
+    const req = {} as any;                       // not used by the method, but required by signature
+    const origin = 'http://localhost';
+    const code = 'code-123';
+
+    // Act
+    const res$ = controller.googleLogin(req, origin, code);
+    const res  = await firstValueFrom(await res$);
+
     expect(tcp.sendAuthReq).toHaveBeenCalledWith(
       { cmd: 'get_auth_token' },
-      { code: 'code-123' },
+      { code: 'code-123',origin: 'http://localhost' },
     );
     expect(res).toEqual({ token: 'abc' });
   });

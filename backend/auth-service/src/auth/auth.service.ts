@@ -1,15 +1,13 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {  Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import axios from 'axios';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserRole } from './user-role.enum';
 import { UsersService } from './user.service';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService, private configService: ConfigService,  private prisma: PrismaService,private userService:UsersService,@Inject(REQUEST) private readonly req: Request) {}
+  constructor(private readonly jwtService: JwtService, private configService: ConfigService,  private prisma: PrismaService,private userService:UsersService) {}
 
   async validateOAuthLogin(profile: any): Promise<string> {
     const payload = { id: profile.id, email: profile.email };
