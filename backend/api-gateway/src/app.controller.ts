@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, Request, Res, Put,Delete,UploadedFile,UseInterceptors, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, Req, Res, Headers, Put,Delete,UploadedFile,UseInterceptors, NotFoundException } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse,ApiConsumes } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { TcpClientService } from './tcp-client.service';
@@ -7,7 +7,7 @@ import { RolesGuard } from './guard/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { firstValueFrom } from 'rxjs';
 import { StreamableFile } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { Roles } from './guard/roles.decorator';
 @Controller()
 export class AppController {
@@ -17,11 +17,27 @@ export class AppController {
 
   }
 
+  getOriginUrl(req: Request, origin?: string) {
+    console.log('req.headers', origin);
+    console.log('req.protocol', req.protocol);
+    console.log('req.socket', req.socket);
+    if (origin) return origin; // when browser sends Origin (CORS / non-GET, etc.)
+
+    // prefer forwarded headers when behind a proxy/load balancer
+    const xfProto = (req.headers['x-forwarded-proto'] as string)?.split(',')[0];
+    const xfHost  = (req.headers['x-forwarded-host']  as string)?.split(',')[0];
+
+    const proto = xfProto || req.protocol || (req.socket as any).encrypted ? 'https' : 'http';
+    const host  = xfHost  || req.get('host');
+
+    return `${proto}://${host}`;
+  }
   // get_auth_token
   @Post('auth/google')
   @Throttle({ default: { limit: 2, ttl: 50 } })
-  async googleLogin(@Body('code') code: string) {
-    return this.tcpClientService.sendAuthReq({ cmd: 'get_auth_token' }, { code });
+  async googleLogin(@Req() req: any, @Headers('origin') originHeader: string, @Body('code') code: string) {
+    const origin=this.getOriginUrl(req,originHeader);
+    return this.tcpClientService.sendAuthReq({ cmd: 'get_auth_token' }, { code,origin: origin });
   }
 
   /**
@@ -126,7 +142,7 @@ export class AppController {
   })
   @ApiResponse({ status: 201, description: 'Document created successfully' })
   createDocument(
-    @Request() req: any,
+    @Req() req: any,
     @Body() body: { title: string; description?: string },
     @UploadedFile() file: Express.Multer.File,
   ) {
@@ -151,7 +167,7 @@ export class AppController {
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all documents', description: 'Returns a list of documents based on role' })
-  getAllDocuments(@Request() req: any) {
+  getAllDocuments(@Req() req: any) {
     console.log('Sending request to GET Document Service for user:', JSON.stringify(req.user));
     return this.tcpClientService.sendDocumentReq({ cmd: 'get_all_document' }, { user: req.user });
   }
@@ -168,7 +184,7 @@ export class AppController {
   @ApiBearerAuth()
   @Throttle({ default: { limit: 2, ttl: 50 } })
   @ApiParam({ name: 'id', required: true, description: 'Document ID', example: '65e1234abcd56789efgh' })
-  getDocumentById(@Request() req: any, @Param('id') id: string) {
+  getDocumentById(@Req() req: any, @Param('id') id: string) {
     console.log('Sending request to GET Document Service for ID:', id);
     // Pass user for service-level authorization checks
     return this.tcpClientService.sendDocumentReq({ cmd: 'get_document_by_id' }, { id, user: req.user });
@@ -198,7 +214,7 @@ export class AppController {
   @ApiResponse({ status: 200, description: 'Document updated successfully' })
   @ApiResponse({ status: 404, description: 'Document not found' })
   async updateDocument(
-    @Request() req: any,
+    @Req() req: any,
     @Param('id') id: string,
     @Body() body: { title?: string; description?: string },
   ) {
@@ -222,7 +238,7 @@ export class AppController {
   @ApiParam({ name: 'id', required: true, description: 'Document ID', example: '65e1234abcd56789efgh' })
   @ApiResponse({ status: 200, description: 'Document deleted successfully' })
   @ApiResponse({ status: 404, description: 'Document not found' })
-  async deleteDocument(@Request() req: any, @Param('id') id: string) {
+  async deleteDocument(@Req() req: any, @Param('id') id: string) {
     return this.tcpClientService.sendDocumentReq({ cmd: 'delete_document' }, { id, user: req.user });
   }
 
@@ -264,7 +280,7 @@ export class AppController {
   @ApiResponse({ status: 200, description: 'File stream' })
   @ApiResponse({ status: 404, description: 'Document or file not found' })
   async downloadDocument(
-    @Request() req: any,
+    @Req() req: any,
     @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
@@ -323,7 +339,7 @@ export class AppController {
   })
   @ApiResponse({ status: 200, description: 'Document ingestion triggered successfully' })
   @ApiResponse({ status: 404, description: 'Document not found' })
-  async trigger(@Request() req: any, @Body() documentIds: string[]) {
+  async trigger(@Req() req: any, @Body() documentIds: string[]) {
     return this.tcpClientService.sendDocumentReq({ cmd: 'trigger_job' }, { dto:documentIds,user: req.user});
   }
 
@@ -335,7 +351,7 @@ export class AppController {
   @ApiParam({ name: 'jobId', required: true, description: 'Job ID', example: '65e1234abcd56789efgh' })
   @ApiResponse({ status: 200, description: 'Document ingestion triggered successfully' })
   @ApiResponse({ status: 404, description: 'Document not found' })
-  async status(@Request() req: any, @Param('jobId') jobId: string) {
+  async status(@Req() req: any, @Param('jobId') jobId: string) {
     return this.tcpClientService.sendDocumentReq({ cmd: 'get_job_status' }, { jobId, user: req.user });
   }
 
@@ -348,7 +364,7 @@ export class AppController {
   @ApiParam({ name: 'id', required: true, description: 'Document ID', example: '65e1234abcd56789efgh' })
   @ApiResponse({ status: 200, description: 'Document ingestion triggered successfully' })
   @ApiResponse({ status: 404, description: 'Document not found' })
-  async list(@Request() req: any, @Query('limit') limit = 50, @Query('offset') offset = 0) {
+  async list(@Req() req: any, @Query('limit') limit = 50, @Query('offset') offset = 0) {
     return this.tcpClientService.sendDocumentReq({ cmd: 'list_jobs' }, { user: req.user, limit: Number(limit), offset: Number(offset) });
   }
 

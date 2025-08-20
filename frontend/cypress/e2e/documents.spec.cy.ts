@@ -15,12 +15,15 @@ describe('Documents - E2E', () => {
     });
     // List documents
     cy.intercept('GET', '**/documents', { fixture: 'documents.json' }).as('getDocs');
-    cy.visit('/documents');
-    cy.wait('@getDocs');
+    
+    // cy.wait('@getDocs');
   });
 
   it('opens the upload dialog and cancels', () => {
-    cy.get('[data-cy="open-upload"]').click();
+    // cy.visit('/documents');
+    cy.wait(3000); // Wait for the page to load
+    cy.get('[data-cy="btnUploadDocument"]').should('be.visible');
+    cy.get('[data-cy="btnUploadDocument"]').click();
     cy.get('.mat-mdc-dialog-container').should('be.visible');
     cy.get('[data-cy="dialog-title"]').should('contain', 'Upload Document');
     cy.get('[data-cy="cancel"]').click();

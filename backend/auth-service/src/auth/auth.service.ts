@@ -1,13 +1,15 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import axios from 'axios';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserRole } from './user-role.enum';
 import { UsersService } from './user.service';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService, private configService: ConfigService,  private prisma: PrismaService,private userService:UsersService) {}
+  constructor(private readonly jwtService: JwtService, private configService: ConfigService,  private prisma: PrismaService,private userService:UsersService,@Inject(REQUEST) private readonly req: Request) {}
 
   async validateOAuthLogin(profile: any): Promise<string> {
     const payload = { id: profile.id, email: profile.email };
@@ -25,12 +27,13 @@ export class AuthService {
   generateToken(user: any) {
     return this.jwtService.sign(user);
   }
-
-  async getGoogleAuthToken(code: string) {
+  // Helper that handles proxies/CDNs too
+  
+  async getGoogleAuthToken(code: string,origion:string) {
     const tokenUrl = 'https://oauth2.googleapis.com/token';
     const clientId = this.configService.get('GOOGLE_CLIENT_ID');
     const clientSecret = this.configService.get('GOOGLE_CLIENT_SECRET');
-    const redirectUri =  this.configService.get('GOOGLE_CALLBACK_URL');
+    const redirectUri = origion+'/auth/callback'; // this.configService.get('GOOGLE_CALLBACK_URL');
 
     const { data } = await axios.post(tokenUrl, {
       code,
